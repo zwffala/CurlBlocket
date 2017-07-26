@@ -6,7 +6,7 @@
 
 import urllib3
 import io
-import re
+import utils
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 http = urllib3.PoolManager()
@@ -52,10 +52,26 @@ nextPage = 'Nästa sida'
 #!grep data need to consider miss format tolarence (capital letter, space, unit)
 # grep until no 'Nästa sida'
 
+
+
 pageContentBuf = io.StringIO(pageContent)
-for line in pageContentBuf.readlines():
-    print(line)
+# for line in pageContentBuf.readlines():
+#     print(line)
+
+# for line in pageContentBuf.readlines():
+#     if utils.getAddressStart(line):
+#         continue
 
 
-def getAddress(line):
-    re.match('roomLocation')
+lines = '''# <span class="subject-param address separator">
+# 				Stockholms stad - Hägersten, Liljeholmen
+#
+# 				</span>'''
+
+
+linesBuf = io.StringIO(lines)
+linesList = linesBuf.readlines()
+for index, line in enumerate(linesList):
+    if utils.getAddressStart(line) is not None:
+        address = utils.getAddress(''.join(linesList[index+1:]))
+        print(address)
