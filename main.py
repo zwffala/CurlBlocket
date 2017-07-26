@@ -14,24 +14,6 @@ urlbase = 'https://www.blocket.se/bostad/uthyres/stockholm'
 r = http.request('GET', urlbase)
 pageContent = r.data.decode('utf-8')
 
-# <span class="subject-param address separator">
-# 				Stockholms stad - Hägersten, Liljeholmen
-#
-# 				</span>
-roomLocation = 'subject-param address separator'
-
-
-# <a tabindex="50" class="item_link xiti_ad_heading" href="https://www.blocket.se/stockholm/2A_uthyres_vid_Telefonplan_74491121.htm?ca=11&w=1">
-#
-# 						2A uthyres vid Telefonplan
-#
-#
-#
-# 				</a>
-adHeading = 'item_link xiti_ad_heading'
-
-# <span class="li_detail_params first rooms">1,5 rum
-roomStyle = 'li_detail_params first rooms'
 
 # <span class="li_detail_params monthly_rent">5 500 kr/mån</span>
 monthlyRent = 'li_detail_params monthly_rent'
@@ -58,20 +40,12 @@ pageContentBuf = io.StringIO(pageContent)
 # for line in pageContentBuf.readlines():
 #     print(line)
 
-# for line in pageContentBuf.readlines():
-#     if utils.getAddressStart(line):
-#         continue
 
-
-lines = '''# <span class="subject-param address separator">
-# 				Stockholms stad - Hägersten, Liljeholmen
-#
-# 				</span>'''
-
-
-linesBuf = io.StringIO(lines)
-linesList = linesBuf.readlines()
-for index, line in enumerate(linesList):
-    if utils.getAddressStart(line) is not None:
-        address = utils.getAddress(''.join(linesList[index+1:]))
+pageContentList = pageContentBuf.readlines()
+for index, line in enumerate(pageContentList):
+    if utils.getRoomLocationStartLine(line) is not None:
+        address = utils.getRoomLocation(''.join(pageContentList[index:]))
         print(address)
+    if utils.getAdHeadingStartLine(line) is not None:
+        adHeading = utils.getAdHeading(''.join(pageContentList[index:]))
+        print(adHeading)
