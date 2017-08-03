@@ -10,13 +10,12 @@ import utils
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 http = urllib3.PoolManager()
-urlbase = 'https://www.blocket.se/bostad/uthyres/stockholm'
+urlbase = 'https://www.blocket.se/bostad/uthyres/stockholm?cg_multi=3020'  # rent apartment
 r = http.request('GET', urlbase)
 pageContent = r.data.decode('utf-8')
 
 
-# <span class="li_detail_params monthly_rent">5 500 kr/mån</span>
-monthlyRent = 'li_detail_params monthly_rent'
+
 
 # <span class="li_detail_params first weekly_rent_peakseason">Från: 3 500 kr/vecka</span>
 weeklyRent = 'li_detail_params first weekly_rent_peakseason'
@@ -43,9 +42,15 @@ pageContentBuf = io.StringIO(pageContent)
 
 pageContentList = pageContentBuf.readlines()
 for index, line in enumerate(pageContentList):
-    if utils.getRoomLocationStartLine(line) is not None:
-        address = utils.getRoomLocation(''.join(pageContentList[index:]))
+    if utils.getRoomLocationStartLine(line):
+        address = utils.getRoomLocation(''.join(pageContentList[index+1:]))
         print(address)
-    if utils.getAdHeadingStartLine(line) is not None:
-        adHeading = utils.getAdHeading(''.join(pageContentList[index:]))
+    if utils.getAdHeadingStartLine(line):
+        adHeading = utils.getAdHeading(''.join(pageContentList[index+1:]))
         print(adHeading)
+    if utils.getRoomStyleStartLine(line):
+        roomStyle = utils.getRoomStyle(''.join(pageContentList[index:]))
+        print(roomStyle)
+    if utils.getMonthlyRentStartLine(line):
+        monthlyRent = utils.getMonthlyRent(''.join(pageContentList[index:]))
+        print(monthlyRent)

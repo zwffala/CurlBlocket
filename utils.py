@@ -10,13 +10,10 @@ def getRoomLocationStartLine(line):
     return re.search(roomLocation, line)
 
 def getRoomLocation(lines):
-    print(lines)
     m = re.search('((.|\n)*)</span>', lines)
     if m is not None:
-        print('m.group(1)'+m.group(1))
-        m2 = re.search('(.*)[^\n^\t]', m.group(1), re.MULTILINE)
+        m2 = re.search('[^\n^\t]*[^\n^\t]$', m.group(1), re.MULTILINE)
         if m2 is not None:
-            print('m2.group(0)'+m2.group(0))
             return m2.group(0)
     return ''
 
@@ -42,11 +39,24 @@ def getAdHeading(lines):
 
 # <span class="li_detail_params first rooms">1,5 rum</span>
 roomStyle = 'li_detail_params first rooms'
-#def getRoomStypeStartLine()
+def getRoomStyleStartLine(line):
+    return re.search(roomStyle, line)
 
+def getRoomStyle(lines):
+    m = re.search(roomStyle+'">(.*) rum</span>', lines)
+    if m:
+        return m.group(1)
+    return ''
 
-lines = '''# <span class="subject-param address separator">
-# 				Stockholms stad - Hägersten, Liljeholmen
-#
-# 				</span>'''
-getRoomLocation(lines)
+# <span class="li_detail_params monthly_rent">5 500 kr/mån</span>
+monthlyRent = 'li_detail_params monthly_rent'
+def getMonthlyRentStartLine(line):
+    return re.search(monthlyRent, line)
+
+def getMonthlyRent(lines):
+    m = re.search(monthlyRent+'">(.*) kr/mån</span>', lines)
+    if m:
+        return int(m.group(1).replace(' ', ''))
+    return 0
+
+#getMonthlyRent('<div class="details"><span class="li_detail_params first rooms">1,5 rum</span><span class="li_detail_params monthly_rent">4 000 kr/mån</span><span class="li_detail_params size">22 m²</span>')
