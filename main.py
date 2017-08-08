@@ -2,6 +2,7 @@
 # This is to curl the blocket and anylize the price a certain apartment can be rent out
 # in the market giving the location, rent period and apartment area.
 # It would be nice to know how long it takes to rent the apartment out.
+# For long term rent only. So not consider weekly rent.
 ##########
 
 import urllib3
@@ -14,17 +15,6 @@ urlbase = 'https://www.blocket.se/bostad/uthyres/stockholm?cg_multi=3020'  # ren
 r = http.request('GET', urlbase)
 pageContent = r.data.decode('utf-8')
 
-
-
-
-# <span class="li_detail_params first weekly_rent_peakseason">Från: 3 500 kr/vecka</span>
-weeklyRent = 'li_detail_params first weekly_rent_peakseason'
-
-# <span class="li_detail_params size">25 m²</span>
-roomSize = 'li_detail_params size'
-
-# datetime="2017-07-25 08:08:30"
-onTheMarketTime = 'datetime'
 
 # <a href="https://www.blocket.se/bostad/uthyres/stockholm?o=2"><span class="caret"></span><span class="sr-only">Nästa sida</span></a>
 nextPage = 'Nästa sida'
@@ -40,6 +30,9 @@ pageContentBuf = io.StringIO(pageContent)
 #     print(line)
 
 
+# Todo: disgard entry with incomplete info
+# Todo: consider entry update
+# Todo: if re exp cannot handle multiple line, optimise
 pageContentList = pageContentBuf.readlines()
 for index, line in enumerate(pageContentList):
     if utils.getRoomLocationStartLine(line):
@@ -54,3 +47,9 @@ for index, line in enumerate(pageContentList):
     if utils.getMonthlyRentStartLine(line):
         monthlyRent = utils.getMonthlyRent(''.join(pageContentList[index:]))
         print(monthlyRent)
+    if utils.getRoomSizeStartLine(line):
+        roomSize = utils.getRoomSize(''.join(pageContentList[index:]))
+        print(roomSize)
+    if utils.getOnMarketTimeStartLine(line):
+        onMarketTime = utils.getOnMarketTime(''.join(pageContentList[index:]))
+        print(onMarketTime)

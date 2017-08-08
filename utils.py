@@ -45,8 +45,8 @@ def getRoomStyleStartLine(line):
 def getRoomStyle(lines):
     m = re.search(roomStyle+'">(.*) rum</span>', lines)
     if m:
-        return m.group(1)
-    return ''
+        return float(m.group(1).replace(',', '.'))
+    return 0
 
 # <span class="li_detail_params monthly_rent">5 500 kr/mån</span>
 monthlyRent = 'li_detail_params monthly_rent'
@@ -59,4 +59,41 @@ def getMonthlyRent(lines):
         return int(m.group(1).replace(' ', ''))
     return 0
 
-#getMonthlyRent('<div class="details"><span class="li_detail_params first rooms">1,5 rum</span><span class="li_detail_params monthly_rent">4 000 kr/mån</span><span class="li_detail_params size">22 m²</span>')
+# <span class="li_detail_params first weekly_rent_peakseason">Från: 3 500 kr/vecka</span>
+weeklyRent = 'li_detail_params first weekly_rent_peakseason'
+def getWeeklyRentStartLine(line):
+    return re.search(weeklyRent, line)
+
+def getWeeklyRent(lines):
+    m = re.search(weeklyRent+'">Från: (.*) kr/vecka</span>', lines)
+    if m:
+        return int(m.group(1).replace(' ', ''))
+    return 0
+
+# <span class="li_detail_params size">25 m²</span>
+roomSize = 'li_detail_params size'
+def getRoomSizeStartLine(line):
+    return re.search(roomSize, line)
+
+def getRoomSize(lines):
+    m = re.search(roomSize+'">(.*) m²</span>', lines)
+    if m:
+        return float(m.group(1).replace(' ', '').replace(',','.'))
+    return 0
+
+# datetime="2017-07-25 08:08:30">
+onTheMarketTime = 'datetime'
+def getOnMarketTimeStartLine(line):
+    return re.search(onTheMarketTime, line)
+
+def getOnMarketTime(lines):
+    m = re.search(onTheMarketTime+'="(.*?)">', lines)
+    if m:
+        print(m.group(1))
+        return m.group(1)
+    return ''
+
+line = ''' datetime=
+"2017-07-25 08:08:30">1 aug <span class="time">17:07</span></time>
+'''
+getOnMarketTime(line)
